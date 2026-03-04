@@ -1,80 +1,186 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quick Start
+description: Get started with Dynamic Color in minutes with this complete example
 ---
 
-## Get started in three steps
+This guide will walk you through implementing Dynamic Color in your Cordova application using a complete working example.
 
-Get your documentation site running locally and make your first customization.
+## Complete Example
 
-### Step 1: Set up your local environment
+Here's a fully functional implementation that checks for Dynamic Color availability, retrieves colors, applies them to your DOM, and listens for theme changes:
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+<Steps>
+  <Step title="Wait for Device Ready">
+    The `DynamicColor` object is available in the global scope, but only after the `deviceready` event fires:
 
-### Step 2: Deploy your changes
+    ```javascript
+    document.addEventListener("deviceready", onDeviceReady, false);
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+    function onDeviceReady() {
+      DynamicColor.isDynamicColorAvailable(function(available) {
+        if (available) {
+          getDynamicColor();
+          document.addEventListener('dynamicColorChange', getDynamicColor);
+        }
+      });
+    }
+    ```
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+    <Note>
+      Always check if Dynamic Color is available using `isDynamicColorAvailable()` before using dynamic color features. This ensures compatibility with devices running Android versions below 12.
+    </Note>
+  </Step>
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+  <Step title="Check Dynamic Color Availability">
+    Before using any Dynamic Color features, verify that the device supports it:
 
-### Step 3: Go live
+    ```javascript
+    DynamicColor.isDynamicColorAvailable(function(available) {
+      if (available) {
+        // Device supports Dynamic Color (Android 12+)
+        // Proceed with dynamic color implementation
+      } else {
+        // Fallback to static colors or default theme
+      }
+    });
+    ```
+  </Step>
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+  <Step title="Get and Apply Colors">
+    Retrieve the dynamic colors and apply them to your DOM using CSS variables:
 
-## Next steps
+    ```javascript
+    function getDynamicColor() {
+      // Get system colors (primary, secondary, background, etc.)
+      DynamicColor.colors(function(colors) {
+        // Apply tinted surface colors to DOM as CSS variables
+        DynamicColor.colorsToDom(DynamicColor.tintSurfaceColors(colors.dayNight));
+      });
 
-Now that you have your docs running, explore these key features:
+      // Optional: Get palette colors (tonal variations)
+      DynamicColor.palette(function(colors) {
+        DynamicColor.paletteToDom(colors.palette);
+      });
+    }
+    ```
+
+    The `colorsToDom()` and `paletteToDom()` functions automatically:
+    - Convert colors to CSS variables
+    - Inject them into the DOM
+    - Update existing variables when called again
+
+    <Note>
+      The `tintSurfaceColors()` function applies Material Design 3 elevation tints to surface colors, creating subtle variations (surface1 through surface5) for layered UI elements.
+    </Note>
+  </Step>
+
+  <Step title="Listen for Theme Changes">
+    Subscribe to the `dynamicColorChange` event to update colors when the user changes their theme or wallpaper:
+
+    ```javascript
+    document.addEventListener('dynamicColorChange', getDynamicColor);
+    ```
+
+    This event fires when:
+    - The user switches between light and dark mode
+    - The user changes their wallpaper (which updates the color palette)
+
+    <Note>
+      The `dynamicColorChange` event is automatically monitored by the plugin. You just need to add your event listener.
+    </Note>
+  </Step>
+</Steps>
+
+## Using the Colors in CSS
+
+Once colors are applied to the DOM, you can use them as CSS variables in your stylesheets:
+
+```css
+.myAppStyle {
+  color: var(--md-sys-color-primary);
+  background: var(--md-ref-palette-neutral-variant95);
+}
+
+.surface-container {
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+
+.elevated-card {
+  /* Use tinted surface for elevated UI elements */
+  background: var(--md-sys-color-surface2);
+  color: var(--md-sys-color-on-surface);
+}
+```
+
+## Available CSS Variables
+
+### System Colors (`--md-sys-color-*`)
+
+The main color tokens for Material Design 3:
+
+- `--md-sys-color-primary` - Primary brand color
+- `--md-sys-color-on-primary` - Text/icons on primary
+- `--md-sys-color-secondary` - Secondary brand color
+- `--md-sys-color-on-secondary` - Text/icons on secondary
+- `--md-sys-color-background` - Main background
+- `--md-sys-color-on-background` - Text/icons on background
+- `--md-sys-color-surface` - Surface background
+- `--md-sys-color-surface1` through `--md-sys-color-surface5` - Tinted surface elevations
+- And many more (see the API reference for the complete list)
+
+### Palette Colors (`--md-ref-palette-*`)
+
+Tonal variations from 0 (darkest) to 100 (lightest):
+
+- `--md-ref-palette-primary0` through `--md-ref-palette-primary100`
+- `--md-ref-palette-secondary0` through `--md-ref-palette-secondary100`
+- `--md-ref-palette-tertiary0` through `--md-ref-palette-tertiary100`
+- `--md-ref-palette-neutral0` through `--md-ref-palette-neutral100`
+- `--md-ref-palette-error0` through `--md-ref-palette-error100`
+
+## Full Working Example
+
+Here's the complete code from the plugin README:
+
+```javascript
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+  DynamicColor.isDynamicColorAvailable(function(available) {
+    if (available) {
+      getDynamicColor();
+      document.addEventListener('dynamicColorChange', getDynamicColor);
+    }
+  });
+}
+
+function getDynamicColor() {
+  DynamicColor.colors(function(colors) {
+    DynamicColor.colorsToDom(DynamicColor.tintSurfaceColors(colors.dayNight));
+  });
+
+  // Optional palette colors
+  DynamicColor.palette(function(colors) {
+    DynamicColor.paletteToDom(colors.palette);
+  });
+}
+```
+
+```css
+.myAppStyle {
+  color: var(--md-sys-color-primary);
+  background: var(--md-ref-palette-neutral-variant95);
+}
+```
+
+## Next Steps
 
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="API Reference" icon="code" href="/api/colors">
+    Explore all available methods and properties
+  </Card>
+  <Card title="Guides" icon="book-open" href="/guides/dynamic-colors">
+    See more detailed examples and use cases
+  </Card>
 </CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>

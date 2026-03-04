@@ -1,0 +1,243 @@
+---
+title: Theme Detection
+description: Detect and respond to day/night theme changes in your Cordova app
+---
+
+# Detecting and Responding to Theme Changes
+
+The plugin provides powerful tools to detect the current theme (light or dark) and respond to theme changes in real-time. This feature is available on Android 9 (API level 28) and higher.
+
+## Checking Current Theme
+
+Use the `DynamicColor.dayNight()` method to check whether the device is currently using light or dark theme:
+
+```js
+DynamicColor.dayNight(function(theme) {
+	if (theme == 'light') {
+		// Light theme is active
+		console.log('User is using light theme');
+	} else { // theme == 'dark'
+		// Dark theme is active
+		console.log('User is using dark theme');
+	}
+});
+```
+
+<Note>
+The `dayNight()` method works on Android 9+ for theme detection, while Dynamic Colors require Android 12+.
+</Note>
+
+## Listening for Theme Changes
+
+The plugin fires a `dynamicColorChange` event whenever the theme changes or when the dynamic colors change (for example, when the user changes their wallpaper).
+
+### Event Structure
+
+```js
+document.addEventListener('dynamicColorChange', function(event) {
+	// Check what changed
+	console.log(event.changed);
+});
+```
+
+The `event.changed` object contains two properties:
+
+- **`dayNight`** - `true` if the day/night theme has changed (dark mode turned on or off)
+- **`dynamicColor`** - `true` if the dynamic color palette has changed (e.g., wallpaper changed)
+
+### Complete Event Example
+
+```js
+document.addEventListener('dynamicColorChange', function(event) {
+	
+	event.changed = {
+		dayNight: true, // true if the DayNight theme have changed (dark theme turned on or off)
+		dynamicColor: true, // true if the DynamicColor colors/palette have changed
+	}
+	
+	if (event.changed.dayNight) {
+		DynamicColor.dayNight(function(theme) {
+			if (theme == 'light') {
+				console.log('Switched to light theme');
+			} else { // theme == 'dark'
+				console.log('Switched to dark theme');
+			}
+		});
+	}
+	
+	if (event.changed.dynamicColor) {
+		// Refresh dynamic colors
+		getDynamicColor();
+	}
+	
+});
+```
+
+<Tip>
+Both properties can be `true` simultaneously if the user changes their wallpaper and theme at the same time.
+</Tip>
+
+## Best Practices
+
+### 1. Update UI When Theme Changes
+
+Always update your color scheme when the theme changes:
+
+```js
+function updateColors() {
+	DynamicColor.colors(function(colors) {
+		DynamicColor.colorsToDom(DynamicColor.tintSurfaceColors(colors.dayNight));
+	});
+}
+
+// Initial load
+updateColors();
+
+// Listen for changes
+document.addEventListener('dynamicColorChange', function(event) {
+	if (event.changed.dayNight || event.changed.dynamicColor) {
+		updateColors();
+	}
+});
+```
+
+### 2. Optimize Event Handling
+
+Only refresh what's necessary based on what changed:
+
+```js
+document.addEventListener('dynamicColorChange', function(event) {
+	// Only update theme-specific elements if theme changed
+	if (event.changed.dayNight) {
+		updateThemeSpecificElements();
+	}
+	
+	// Only refresh colors if dynamic colors changed
+	if (event.changed.dynamicColor) {
+		updateDynamicColors();
+	}
+});
+```
+
+### 3. Use dayNight Property
+
+Instead of maintaining separate light/dark logic, use the `dayNight` property which automatically reflects the current theme:
+
+<Tabs>
+<Tab title="Recommended">
+```js
+DynamicColor.colors(function(colors) {
+	// Always use dayNight for current theme
+	DynamicColor.colorsToDom(colors.dayNight);
+});
+```
+</Tab>
+
+<Tab title="Not Recommended">
+```js
+DynamicColor.colors(function(colors) {
+	// Don't manually check theme and switch
+	if (colors.theme === 'light') {
+		DynamicColor.colorsToDom(colors.light);
+	} else {
+		DynamicColor.colorsToDom(colors.dark);
+	}
+});
+```
+</Tab>
+</Tabs>
+
+### 4. Handle Unavailable Features Gracefully
+
+```js
+DynamicColor.isDynamicColorAvailable(function(available) {
+	if (available) {
+		// Use dynamic colors
+		getDynamicColor();
+		document.addEventListener('dynamicColorChange', getDynamicColor);
+	} else {
+		// Fall back to static colors
+		useStaticColorScheme();
+	}
+});
+```
+
+## Complete Implementation Example
+
+```js
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+	DynamicColor.isDynamicColorAvailable(function(available) {
+		if (available) {
+			// Initial color setup
+			getDynamicColor();
+			
+			// Listen for changes
+			document.addEventListener('dynamicColorChange', getDynamicColor);
+		}
+	});
+}
+
+function getDynamicColor() {
+	DynamicColor.colors(function(colors) {
+		// Apply colors with surface tinting
+		DynamicColor.colorsToDom(DynamicColor.tintSurfaceColors(colors.dayNight));
+		
+		// Optional: Log current theme
+		console.log('Current theme:', colors.theme);
+	});
+	
+	// Optional: Get palette colors
+	DynamicColor.palette(function(colors) {
+		DynamicColor.paletteToDom(colors.palette);
+	});
+}
+```
+
+## Theme-Aware Animations
+
+You can create smooth transitions when the theme changes:
+
+```css
+:root {
+	/* Add transitions to color changes */
+	transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+	background-color: var(--md-sys-color-background);
+	color: var(--md-sys-color-on-background);
+}
+```
+
+```js
+document.addEventListener('dynamicColorChange', function(event) {
+	if (event.changed.dayNight) {
+		// Add a class to trigger CSS animations
+		document.body.classList.add('theme-changing');
+		
+		// Update colors
+		getDynamicColor();
+		
+		// Remove class after animation
+		setTimeout(() => {
+			document.body.classList.remove('theme-changing');
+		}, 300);
+	}
+});
+```
+
+<Warning>
+The `dynamicColorChange` event is only fired when your app is in the foreground. If the user changes their theme while your app is in the background, the event will fire when they return to your app.
+</Warning>
+
+## Learn More
+
+<Card title="Dynamic Colors" icon="palette" href="/guides/dynamic-colors">
+  Learn about working with Dynamic Colors and color structure.
+</Card>
+
+<Card title="Color Utilities" icon="paintbrush" href="/guides/color-utilities">
+  Discover color utilities for tinting, mixing, and more.
+</Card>

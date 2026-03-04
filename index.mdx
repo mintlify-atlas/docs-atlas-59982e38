@@ -1,97 +1,156 @@
----
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
----
+<div className="relative bg-gradient-to-br from-[#0f1117] via-[#1a1d27] to-[#0f1117] dark:bg-gradient-to-br dark:from-[#0f1117] dark:via-[#1a1d27] dark:to-[#0f1117] py-20">
+  <div className="max-w-6xl mx-auto px-6">
+    <div className="text-center">
+      <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+        Cordova Plugin Dynamic Color
+      </h1>
+      <p className="text-xl text-gray-300 dark:text-gray-300 max-w-2xl mx-auto mb-8">
+        Access Android 12+ Dynamic Color palettes and Material You theming in your Cordova applications
+      </p>
+      <div className="flex flex-wrap gap-4 justify-center">
+        <a 
+          href="/quickstart" 
+          className="inline-flex items-center px-6 py-3 rounded-lg bg-[#848c8e] text-white font-semibold hover:bg-[#6a7274] transition-colors no-underline"
+        >
+          Get Started
+        </a>
+        <a 
+          href="/api/colors" 
+          className="inline-flex items-center px-6 py-3 rounded-lg border border-gray-600 bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors no-underline"
+        >
+          Explore API
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 
-## Setting up
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="text-center mb-12">
+    <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Quick Start</h2>
+    <p className="text-base text-gray-600 dark:text-gray-400">Get up and running with Dynamic Color in minutes</p>
+  </div>
 
-Get your documentation site up and running in minutes.
+  <Steps>
+    <Step title="Install the plugin">
+      Add the plugin to your Cordova project using the Cordova CLI:
+      
+      ```bash
+      cordova plugin add cordova-plugin-dynamic-color
+      ```
+    </Step>
+    
+    <Step title="Check availability">
+      Verify that Dynamic Color is available on the device (requires Android 12+):
+      
+      ```javascript
+      DynamicColor.isDynamicColorAvailable(function(available) {
+        if (available) {
+          console.log('Dynamic Color is supported!');
+        }
+      });
+      ```
+    </Step>
+    
+    <Step title="Get dynamic colors">
+      Retrieve the current dynamic color palette and apply it to your app:
+      
+      ```javascript
+      DynamicColor.colors(function(colors) {
+        // Access light, dark, and current theme colors
+        const primary = colors.dayNight.primary;
+        const surface = colors.dayNight.surface;
+        
+        // Apply colors to CSS custom properties
+        DynamicColor.colorsToDom(colors.dayNight);
+      });
+      ```
+    </Step>
+  </Steps>
+</div>
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="mb-12">
+    <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Key Features</h2>
+    <p className="text-base text-gray-600 dark:text-gray-400">Everything you need to integrate Material You theming</p>
+  </div>
 
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
+  <CardGroup cols={2}>
     <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+      title="Dynamic Color Access"
+      icon="palette"
+      href="/guides/dynamic-colors"
+    >
+      Access Android 12+ Dynamic Color palettes based on user wallpaper
+    </Card>
+    <Card
+      title="Theme Detection"
+      icon="moon"
+      href="/guides/theme-detection"
+    >
+      Detect and respond to light/dark theme changes in real-time
+    </Card>
+    <Card
+      title="Material Design 3"
+      icon="shapes"
+      href="/api/colors"
+    >
+      Full Material Design 3 color system with semantic color roles
+    </Card>
+    <Card
+      title="CSS Integration"
+      icon="code"
+      href="/guides/color-utilities"
+    >
+      Generate CSS custom properties for seamless styling
+    </Card>
+  </CardGroup>
+</div>
 
-## Create beautiful pages
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="mb-12">
+    <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Explore the API</h2>
+    <p className="text-base text-gray-600 dark:text-gray-400">Comprehensive methods for working with dynamic colors</p>
+  </div>
 
-Everything you need to create world-class documentation.
+  <CardGroup cols={3}>
+    <Card
+      title="Core Methods"
+      icon="code-branch"
+      href="/api/colors"
+    >
+      Get colors, palettes, and theme information
+    </Card>
+    <Card
+      title="Color Utilities"
+      icon="droplet"
+      href="/api/tint-colors"
+    >
+      Mix, tint, and transform colors
+    </Card>
+    <Card
+      title="DOM Helpers"
+      icon="window"
+      href="/api/colors-to-dom"
+    >
+      Apply colors directly to your UI
+    </Card>
+  </CardGroup>
+</div>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="rounded-2xl border border-gray-200 dark:border-[#27272a] bg-gray-50 dark:bg-[#1a1d27] p-8 text-center">
+    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+      Ready to build with Material You?
+    </h2>
+    <p className="text-base text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
+      Start integrating dynamic colors into your Cordova app today
+    </p>
+    <a 
+      href="/quickstart" 
+      className="inline-flex items-center px-6 py-3 rounded-lg bg-[#848c8e] text-white font-semibold hover:bg-[#6a7274] transition-colors no-underline"
+    >
+      Get Started →
+    </a>
+  </div>
+</div>

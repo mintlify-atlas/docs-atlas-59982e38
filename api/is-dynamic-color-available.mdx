@@ -1,0 +1,77 @@
+---
+title: isDynamicColorAvailable
+description: Check if Dynamic Color is available on the current Android device
+---
+
+## Overview
+
+Checks whether Dynamic Color functionality is available on the current Android device. Dynamic Color requires Android 12 (API level 32) or higher.
+
+## Method Signature
+
+```javascript
+DynamicColor.isDynamicColorAvailable(callback)
+```
+
+## Parameters
+
+<ParamField path="callback" type="function" required>
+  Callback function that receives the availability status
+  
+  **Callback Parameters:**
+  - `available` (boolean): `true` if Dynamic Color is available (Android 12+), `false` otherwise
+</ParamField>
+
+## Returns
+
+<ResponseField name="available" type="boolean">
+  Returns `true` if the device is running Android 12+ (API level 32) and Dynamic Color is supported, otherwise returns `false`
+</ResponseField>
+
+## Example
+
+```javascript
+DynamicColor.isDynamicColorAvailable(function(available) {
+
+	if(available) {
+		// Dynamic Color is available
+		// You can now use colors() and palette() methods
+	}
+
+});
+```
+
+## Usage Pattern
+
+This method should be called after the `deviceready` event to ensure the plugin is initialized:
+
+```javascript
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+	DynamicColor.isDynamicColorAvailable(function(available) {
+
+		if(available) {
+			getDynamicColor();
+			document.addEventListener('dynamicColorChange', getDynamicColor);
+		}
+
+	});
+}
+
+function getDynamicColor() {
+	DynamicColor.colors(function(colors) {
+		DynamicColor.colorsToDom(DynamicColor.tintSurfaceColors(colors.dayNight));
+	});
+}
+```
+
+## Implementation Details
+
+- **Platform Support**: Android only
+- **Minimum Version**: Android 9+ (API level 28) for dark theme detection, Android 12+ (API level 32) for Dynamic Color
+- **Native Implementation**: Uses `DynamicColors.isDynamicColorAvailable()` from Material Design library
+
+<Note>
+  Always check availability before using other Dynamic Color methods. On devices below Android 12, this will return `false` and other methods will not return color data.
+</Note>

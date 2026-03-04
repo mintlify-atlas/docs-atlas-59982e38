@@ -1,0 +1,314 @@
+---
+title: Color Utilities
+description: Use built-in utilities for color tinting, mixing, and converting to CSS
+---
+
+# Working with Color Utilities
+
+The plugin provides several utility functions to help you work with dynamic colors, including surface tinting, color mixing, and CSS variable conversion.
+
+## Surface Tinting
+
+Surface tinting is a Material Design 3 technique that adds subtle tints of the primary color to surfaces at different elevations, creating depth and hierarchy in your UI.
+
+### tintSurfaceColors()
+
+Applies surface tinting only to surface and background colors:
+
+```js
+DynamicColor.colors(function(colors) {
+	var tintedColors = DynamicColor.tintSurfaceColors(colors.light);
+	
+	console.log(tintedColors);
+	// {
+	//   surface: '#FFFBFF',
+	//   surface1: '#f9f2f4',
+	//   surface2: '#f6edee',
+	//   surface3: '#f2e8e8',
+	//   surface4: '#f1e6e5',
+	//   surface5: '#efe3e1',
+	//   background: '#FFFBFF',
+	//   background1: '#f9f2f4',
+	//   // ... additional tinted variations
+	// }
+});
+```
+
+The generated CSS variables:
+
+```css
+--md-sys-color-surface: #FFFBFF;
+--md-sys-color-surface1: #f9f2f4;
+--md-sys-color-surface2: #f6edee;
+--md-sys-color-surface3: #f2e8e8;
+--md-sys-color-surface4: #f1e6e5;
+--md-sys-color-surface5: #efe3e1;
+```
+
+<Note>
+`tintSurfaceColors` applies tinting to: `background`, `onBackground`, `surface`, `onSurface`, `surfaceVariant`, `onSurfaceVariant`, `inverseSurface`, and `inverseOnSurface`.
+</Note>
+
+### tintColors()
+
+Applies surface tinting to all colors or specific colors:
+
+```js
+// Tint all colors
+var tintedColors = DynamicColor.tintColors(colors.light);
+
+// Tint only specific keys
+var tintedColors = DynamicColor.tintColors(colors.light, ['primary', 'secondary']);
+```
+
+**Parameters:**
+- `colors` - Color object to tint
+- `onlyKeys` (optional) - Array of keys to generate tint versions for. By default, all keys are tinted.
+
+## Material Design Elevation
+
+Material Design 3 uses surface tinting to convey elevation. The plugin implements the official elevation guidelines:
+
+| Elevation Level | Tint Amount | Use Case |
+|----------------|-------------|----------|
+| 1 | 5% | Cards, elevated buttons |
+| 2 | 8% | Floating action buttons |
+| 3 | 11% | Modal sheets, dialogs |
+| 4 | 12% | Navigation drawer |
+| 5 | 14% | Menus, dropdown menus |
+
+<Tip>
+Use higher elevation levels (and their corresponding tinted surfaces) for UI elements that should appear closer to the user.
+</Tip>
+
+## Color Mixing
+
+### mixColor()
+
+Mix two colors together by a specific amount:
+
+```js
+var mixedColor = DynamicColor.mixColor(color1, color2, amount);
+
+// Example
+var primary = '#8D4E2A';
+var surface = '#FFFBFF';
+var mixed = DynamicColor.mixColor(surface, primary, 0.1);
+// Returns a color that's 90% surface and 10% primary
+```
+
+**Parameters:**
+- `color1` - First color (hex string)
+- `color2` - Second color (hex string)  
+- `amount` - Amount to mix (0.0 to 1.0). 0.0 returns color1, 1.0 returns color2
+
+### mixColorElevation()
+
+Mix two colors according to Material Design elevation guidelines:
+
+```js
+var elevatedColor = DynamicColor.mixColorElevation(color1, color2, elevation);
+
+// Example: Create an elevated surface
+var surface = '#FFFBFF';
+var surfaceTint = '#8D4E2A';
+var elevatedSurface = DynamicColor.mixColorElevation(surface, surfaceTint, 3);
+// Returns a surface color with level 3 elevation (11% tint)
+```
+
+**Parameters:**
+- `color1` - Base color (hex string)
+- `color2` - Tint color (hex string)
+- `elevation` - Elevation level (1 to 5)
+
+<Note>
+The `mixColorElevation` function uses the official Material Design 3 elevation tint percentages.
+</Note>
+
+### CSS Alternative
+
+You can also use CSS [`color-mix`](https://developer.chrome.com/blog/css-color-mix/) to mix colors in your stylesheets:
+
+```css
+.elevated-surface {
+	background: color-mix(
+		in srgb,
+		var(--md-sys-color-surface),
+		var(--md-sys-color-surface-tint) 11%
+	);
+}
+```
+
+<Warning>
+CSS `color-mix` has [limited browser support](https://caniuse.com/?search=color-mix). Use the JavaScript utilities for better compatibility.
+</Warning>
+
+## Converting to CSS Variables
+
+### colorsToCssVars()
+
+Convert a colors object to CSS custom properties:
+
+```js
+DynamicColor.colors(function(colors) {
+	var cssVars = DynamicColor.colorsToCssVars(colors.light, '--md-sys-color');
+	
+	console.log(cssVars);
+	// --md-sys-color-primary: #8D4E2A;
+	// --md-sys-color-on-primary: #FFFFFF;
+	// --md-sys-color-primary-container: #331100;
+	// ...
+});
+```
+
+**Parameters:**
+- `colors` - Color object
+- `prefix` (optional) - CSS variable prefix (default: `--md-sys-color`)
+
+### paletteToCssVars()
+
+Convert a palette object to CSS custom properties:
+
+```js
+DynamicColor.palette(function(colors) {
+	var cssVars = DynamicColor.paletteToCssVars(colors.palette, '--md-ref-palette');
+	
+	console.log(cssVars);
+	// --md-ref-palette-error0: #000000;
+	// --md-ref-palette-error10: #410E0B;
+	// --md-ref-palette-error20: #601410;
+	// ...
+});
+```
+
+**Parameters:**
+- `colors` - Palette object
+- `prefix` (optional) - CSS variable prefix (default: `--md-ref-palette`)
+
+## Injecting into DOM
+
+The plugin provides convenient methods to automatically inject CSS variables into the DOM:
+
+### colorsToDom()
+
+```js
+DynamicColor.colors(function(colors) {
+	// Inject colors into DOM as CSS variables
+	DynamicColor.colorsToDom(colors.dark, '--md-sys-color');
+});
+```
+
+This creates a `<style>` element with CSS variables in the `:root` selector:
+
+```css
+:root {
+	--md-sys-color-primary: #FFB68F;
+	--md-sys-color-on-primary: #532201;
+	/* ... */
+}
+```
+
+### paletteToDom()
+
+```js
+DynamicColor.palette(function(colors) {
+	// Inject palette into DOM as CSS variables
+	DynamicColor.paletteToDom(colors.palette, '--md-ref-palette');
+});
+```
+
+## Complete Example
+
+Here's a complete example combining surface tinting and DOM injection:
+
+```js
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+	DynamicColor.isDynamicColorAvailable(function(available) {
+		if (available) {
+			getDynamicColor();
+			document.addEventListener('dynamicColorChange', getDynamicColor);
+		}
+	});
+}
+
+function getDynamicColor() {
+	DynamicColor.colors(function(colors) {
+		// Apply surface tinting and inject into DOM
+		var tintedColors = DynamicColor.tintSurfaceColors(colors.dayNight);
+		DynamicColor.colorsToDom(tintedColors);
+	});
+	
+	// Optional: Add palette colors
+	DynamicColor.palette(function(colors) {
+		DynamicColor.paletteToDom(colors.palette);
+	});
+}
+```
+
+Then use the colors in your CSS:
+
+```css
+.myAppStyle {
+	color: var(--md-sys-color-primary);
+	background: var(--md-ref-palette-neutral-variant95);
+}
+
+.card {
+	background: var(--md-sys-color-surface2);
+	color: var(--md-sys-color-on-surface);
+}
+
+.elevated-card {
+	background: var(--md-sys-color-surface3);
+	color: var(--md-sys-color-on-surface);
+}
+```
+
+## Custom Tinting Example
+
+Create custom tinted variations for specific use cases:
+
+```js
+function createCustomElevation(colors) {
+	// Create a highly elevated surface
+	var veryElevated = DynamicColor.mixColorElevation(
+		colors.surface,
+		colors.surfaceTint,
+		5 // Highest elevation
+	);
+	
+	// Create a subtle tint
+	var subtleAccent = DynamicColor.mixColor(
+		colors.surface,
+		colors.primary,
+		0.03 // Very subtle 3% tint
+	);
+	
+	return {
+		...colors,
+		surfaceVeryElevated: veryElevated,
+		surfaceSubtleAccent: subtleAccent
+	};
+}
+
+DynamicColor.colors(function(colors) {
+	var customColors = createCustomElevation(colors.dayNight);
+	DynamicColor.colorsToDom(customColors);
+});
+```
+
+## Learn More
+
+<Card title="Material Design Elevation" icon="layers" href="https://m3.material.io/styles/color/the-color-system/color-roles#de5b0f5e-c4a5-48ef-8670-369682e9c7b7">
+  Learn more about Material Design 3 elevation and surface tinting.
+</Card>
+
+<Card title="Dynamic Colors" icon="palette" href="/guides/dynamic-colors">
+  Learn about working with Dynamic Colors and color structure.
+</Card>
+
+<Card title="Theme Detection" icon="moon" href="/guides/theme-detection">
+  Learn how to detect and respond to theme changes.
+</Card>

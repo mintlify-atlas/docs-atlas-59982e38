@@ -1,0 +1,135 @@
+---
+title: 'mixColorElevation'
+description: 'Mix two colors using Material Design elevation levels'
+---
+
+## Overview
+
+Mixes two colors together according to [Material Design Guidelines Elevation](https://m3.material.io/styles/color/the-color-system/color-roles#de5b0f5e-c4a5-48ef-8670-369682e9c7b7) levels. This method applies predefined tint amounts based on elevation levels 1-5, following Material Design specifications for surface elevation tinting.
+
+## Signature
+
+```js
+DynamicColor.mixColorElevation(color1, color2, elevation)
+```
+
+## Parameters
+
+<ParamField path="color1" type="string" required>
+  The base color as a hex string (e.g., `'#FFFBFF'`). Typically a surface color.
+</ParamField>
+
+<ParamField path="color2" type="string" required>
+  The tint color as a hex string (e.g., `'#8D4E2A'`). Typically the `surfaceTint` color.
+</ParamField>
+
+<ParamField path="elevation" type="number" required>
+  The elevation level from `1` to `5`. Each level corresponds to a predefined tint amount:
+  
+  - `1` → 5% tint (0.05)
+  - `2` → 8% tint (0.08)
+  - `3` → 11% tint (0.11)
+  - `4` → 12% tint (0.12)
+  - `5` → 14% tint (0.14)
+</ParamField>
+
+## Returns
+
+<ResponseField name="result" type="string">
+  A hex color string representing the mixed color at the specified elevation level.
+</ResponseField>
+
+## Elevation Tint Map
+
+The elevation-to-tint mapping is defined in Material Design Guidelines:
+
+| Elevation | Tint Amount | Use Case |
+|-----------|-------------|----------|
+| 1 | 5% | Low elevation surfaces |
+| 2 | 8% | Cards, elevated buttons |
+| 3 | 11% | Menus, dialogs |
+| 4 | 12% | Navigation drawer |
+| 5 | 14% | Modal bottom sheets |
+
+## Example
+
+```js
+DynamicColor.colors(function(colors) {
+  var surface = colors.light.surface;
+  var tint = colors.light.surfaceTint;
+  
+  // Create elevation variants
+  var surface1 = DynamicColor.mixColorElevation(surface, tint, 1);
+  var surface2 = DynamicColor.mixColorElevation(surface, tint, 2);
+  var surface3 = DynamicColor.mixColorElevation(surface, tint, 3);
+  var surface4 = DynamicColor.mixColorElevation(surface, tint, 4);
+  var surface5 = DynamicColor.mixColorElevation(surface, tint, 5);
+  
+  console.log(surface);  // '#FFFBFF'
+  console.log(surface1); // '#f9f2f4'
+  console.log(surface2); // '#f6edee'
+  console.log(surface3); // '#f2e8e8'
+  console.log(surface4); // '#f1e6e5'
+  console.log(surface5); // '#efe3e1'
+});
+```
+
+## Use Cases
+
+### Creating Elevated Surfaces
+
+```js
+// Apply elevation to a card component
+var cardBackground = DynamicColor.mixColorElevation(
+  colors.light.surface,
+  colors.light.surfaceTint,
+  2 // Elevation level 2 for cards
+);
+```
+
+### Custom Component Elevation
+
+```js
+// Different elevation levels for different states
+var buttonResting = DynamicColor.mixColorElevation(surface, tint, 1);
+var buttonHovered = DynamicColor.mixColorElevation(surface, tint, 2);
+var buttonPressed = DynamicColor.mixColorElevation(surface, tint, 1);
+```
+
+<Note>
+This method is internally used by [`tintColors`](/api/tint-colors) to generate surface1-surface5 variants automatically.
+</Note>
+
+## Implementation Details
+
+Implementation location: `www/plugin.js:63-66`
+
+The elevation map is defined at `www/plugin.js:31-37`:
+
+```js
+var tintElevations = {
+  1: 0.05,
+  2: 0.08,
+  3: 0.11,
+  4: 0.12,
+  5: 0.14,
+};
+
+function mixColorElevation(color1, color2, elevation) {
+  return _mixColorElevation(hexToRgb(color1), hexToRgb(color2), elevation);
+}
+```
+
+<Tip>
+For custom tint amounts outside the predefined elevation levels, use [`mixColor`](/api/mix-color) with a specific amount value.
+</Tip>
+
+## Material Design Guidelines
+
+This implementation follows the [Material Design 3 elevation tinting system](https://m3.material.io/styles/color/the-color-system/color-roles#c0cdc1ba-7e67-4d6a-b294-218f659ff648), which applies surface tint to create visual hierarchy and depth without using shadows.
+
+## Related Methods
+
+- [`mixColor`](/api/mix-color) - Mix colors with custom amount values
+- [`tintColors`](/api/tint-colors) - Apply elevation tints to multiple colors
+- [`tintSurfaceColors`](/api/tint-surface-colors) - Convenience method for surface colors

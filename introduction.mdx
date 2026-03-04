@@ -1,0 +1,48 @@
+---
+title: Introduction
+description: Access Android 12+ Dynamic Color palette in your Cordova applications
+---
+
+The Cordova Plugin Dynamic Color provides access to Android's Material You [dynamic color](https://m3.material.io/styles/color/dynamic-color/overview) system, allowing your app to automatically adapt its color scheme based on the user's wallpaper and system preferences.
+
+## What is Dynamic Color?
+
+Dynamic Color is part of Material Design 3 (Material You) introduced in Android 12. It extracts colors from the user's wallpaper to create a personalized color palette that can be applied throughout your application, providing a cohesive and personalized user experience.
+
+## Key Features
+
+- **Access Dynamic Color Palette**: Retrieve the full Material Design 3 color system including primary, secondary, tertiary colors and their variants
+- **Theme Detection**: Check if the device is in light or dark mode (Android 9+)
+- **Real-time Updates**: Listen for theme changes when users switch between light/dark mode or change their wallpaper
+- **Color Manipulation**: Mix colors and apply Material Design elevation tints
+- **CSS Integration**: Automatically convert colors to CSS variables and inject them into your DOM
+- **Palette Colors**: Access the complete color palette with all tonal variations (0-100 scale)
+
+## Requirements
+
+<Note>
+  Dynamic Color requires **Android 12 (API level 31)** or higher. The plugin provides methods to check availability before use.
+</Note>
+
+- **Platform**: Android 12+ (API level 31+)
+- **Framework**: Apache Cordova
+- **Dependency**: Google Material library (automatically included)
+
+## How It Works
+
+The plugin exposes a global `DynamicColor` object that provides:
+
+1. Color scheme retrieval for light and dark themes
+2. Real-time theme change detection via the `dynamicColorChange` event
+3. Helper functions to apply Material Design tint elevations
+4. Automatic CSS variable generation and DOM injection
+
+## Next Steps
+
+<Card title="Installation" icon="download" href="/installation">
+  Install the plugin and set up your development environment
+</Card>
+
+<Card title="Quick Start" icon="rocket" href="/quickstart">
+  Get started with a complete working example
+</Card>

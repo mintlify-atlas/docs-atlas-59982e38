@@ -1,0 +1,91 @@
+---
+title: dayNight
+description: Check if the device is in light or dark theme mode
+---
+
+## Overview
+
+Checks the current day/night theme status of the device. This determines whether dark mode is enabled or disabled. Available on Android 9+ (API level 28).
+
+## Method Signature
+
+```javascript
+DynamicColor.dayNight(callback)
+```
+
+## Parameters
+
+<ParamField path="callback" type="function" required>
+  Callback function that receives the current theme status
+  
+  **Callback Parameters:**
+  - `theme` (string): Either `'light'` or `'dark'`
+</ParamField>
+
+## Returns
+
+<ResponseField name="theme" type="string">
+  Returns the current theme mode:
+  - `'light'` - Light/day theme is active
+  - `'dark'` - Dark/night theme is active
+</ResponseField>
+
+## Example
+
+```javascript
+DynamicColor.dayNight(function(theme) {
+
+	if(theme == 'light') {
+		// Light theme is active
+		console.log('Device is in light mode');
+	} else { // theme == 'dark'
+		// Dark theme is active
+		console.log('Device is in dark mode');
+	}
+
+});
+```
+
+## Use Cases
+
+### Apply Theme-Specific Styles
+
+```javascript
+DynamicColor.dayNight(function(theme) {
+	if(theme == 'light') {
+		document.body.classList.add('light-theme');
+		document.body.classList.remove('dark-theme');
+	} else {
+		document.body.classList.add('dark-theme');
+		document.body.classList.remove('light-theme');
+	}
+});
+```
+
+### Listen for Theme Changes
+
+```javascript
+document.addEventListener('dynamicColorChange', function(event) {
+	if(event.changed.dayNight) {
+		DynamicColor.dayNight(function(theme) {
+			console.log('Theme changed to:', theme);
+			// Update your UI accordingly
+		});
+	}
+});
+```
+
+## Implementation Details
+
+- **Platform Support**: Android 9+ (API level 28)
+- **Native Implementation**: Checks `Configuration.UI_MODE_NIGHT_MASK` flag
+- **Source Reference**: `plugin.js:160-165`, `DynamicColor.java:89-105`
+
+<Note>
+  This method is independent of Dynamic Color availability and works on Android 9+, while Dynamic Color requires Android 12+.
+</Note>
+
+## Related Methods
+
+- Use with [`colors()`](/api/colors) to get the appropriate color set based on theme
+- Listen to [`dynamicColorChange`](/events/dynamic-color-change) event to detect theme changes

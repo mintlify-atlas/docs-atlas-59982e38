@@ -1,0 +1,113 @@
+---
+title: 'mixColor'
+description: 'Mix two colors together based on a specified amount'
+---
+
+## Overview
+
+Mixes two colors together according to a specified amount value between 0.0 and 1.0. This method performs RGB interpolation to blend the colors smoothly.
+
+## Signature
+
+```js
+DynamicColor.mixColor(color1, color2, amount)
+```
+
+## Parameters
+
+<ParamField path="color1" type="string" required>
+  The first color as a hex string (e.g., `'#FFFFFF'`). This is the base color.
+</ParamField>
+
+<ParamField path="color2" type="string" required>
+  The second color as a hex string (e.g., `'#000000'`). This color will be mixed into the base color.
+</ParamField>
+
+<ParamField path="amount" type="number" required>
+  The mix amount from `0.0` to `1.0`:
+  - `0.0` returns `color1` unchanged
+  - `1.0` returns `color2` unchanged
+  - `0.5` returns a 50/50 mix of both colors
+  
+  Values represent the percentage of `color2` in the final mix.
+</ParamField>
+
+## Returns
+
+<ResponseField name="result" type="string">
+  A hex color string representing the mixed color (e.g., `'#808080'`).
+</ResponseField>
+
+## Example
+
+```js
+var white = '#FFFFFF';
+var black = '#000000';
+
+// Mix 50% of each color
+var gray = DynamicColor.mixColor(white, black, 0.5);
+console.log(gray); // '#808080'
+
+// Mix 20% black into white (light gray)
+var lightGray = DynamicColor.mixColor(white, black, 0.2);
+console.log(lightGray); // '#CCCCCC'
+
+// Mix 80% black into white (dark gray)
+var darkGray = DynamicColor.mixColor(white, black, 0.8);
+console.log(darkGray); // '#333333'
+```
+
+## Use Cases
+
+### Creating Custom Tints
+
+```js
+DynamicColor.colors(function(colors) {
+  var surface = colors.light.surface;
+  var tint = colors.light.surfaceTint;
+  
+  // Create a custom 15% tint
+  var customTint = DynamicColor.mixColor(surface, tint, 0.15);
+});
+```
+
+### Opacity Simulation
+
+```js
+// Simulate 30% opacity of primary color on white background
+var primary = colors.light.primary;
+var background = colors.light.background;
+var semiTransparent = DynamicColor.mixColor(background, primary, 0.3);
+```
+
+<Note>
+The mixing is performed in RGB color space using linear interpolation. Each RGB component is calculated independently:
+- `R = R1 + (R2 - R1) × amount`
+- `G = G1 + (G2 - G1) × amount`
+- `B = B1 + (B2 - B1) × amount`
+</Note>
+
+## Implementation Details
+
+Implementation location: `www/plugin.js:49-53`
+
+The method internally:
+1. Converts hex colors to RGB using `hexToRgb` (lines 6-15)
+2. Performs RGB interpolation with `_mixColor` (lines 39-47)
+3. Converts the result back to hex using `rgbToHex` (lines 24-28)
+
+```js
+function mixColor(color1, color2, amount) {
+  return _mixColor(hexToRgb(color1), hexToRgb(color2), amount);
+}
+```
+
+<Tip>
+For Material Design elevation-based mixing, use [`mixColorElevation`](/api/mix-color-elevation) which applies predefined tint amounts for elevation levels 1-5.
+</Tip>
+
+## Related Methods
+
+- [`mixColorElevation`](/api/mix-color-elevation) - Mix colors using Material Design elevation levels
+- [`tintColors`](/api/tint-colors) - Apply elevation tints to multiple colors
+- [`tintSurfaceColors`](/api/tint-surface-colors) - Apply elevation tints to surface colors

@@ -1,0 +1,247 @@
+---
+title: Working with Dynamic Colors
+description: Learn how to work with Material You Dynamic Colors in your Cordova app
+---
+
+# Working with Dynamic Colors
+
+Dynamic Colors is a key feature of Material You (Material Design 3) that allows your app to adapt its color scheme based on the user's wallpaper and theme preferences on Android 12+.
+
+## What are Dynamic Colors?
+
+Dynamic Colors in Material You create a personalized color palette derived from the user's wallpaper. The system generates a complete color scheme including primary, secondary, and tertiary colors, along with their variants and surface colors, all harmonized with the user's chosen wallpaper.
+
+<Note>
+Dynamic Colors are only available on Android 12 (API level 32) and higher. Always check availability before using these features.
+</Note>
+
+## Colors vs Palette: Understanding the Difference
+
+The plugin provides two different methods to access color information:
+
+### DynamicColor.colors()
+
+Returns semantic color roles defined by Material Design 3. These are the colors you'll use most often in your app's UI.
+
+```js
+DynamicColor.colors(function(colors) {
+	console.log(colors);
+});
+```
+
+### DynamicColor.palette()
+
+Returns the complete tonal palette with color variations from 0 to 100. This gives you access to the full range of color tones for more granular control.
+
+```js
+DynamicColor.palette(function(colors) {
+	console.log(colors.palette);
+});
+```
+
+<Tip>
+Use `DynamicColor.colors()` for most UI elements. Only use `DynamicColor.palette()` when you need specific tonal variations not available in the semantic color roles.
+</Tip>
+
+## Color Structure
+
+The colors object returned by `DynamicColor.colors()` contains three variants:
+
+<Tabs>
+<Tab title="Light Theme">
+```js
+colors.light = {
+	primary: '#8D4E2A',
+	onPrimary: '#FFFFFF',
+	primaryContainer: '#331100',
+	onPrimaryContainer: '#000000',
+	secondary: '#765848',
+	onSecondary: '#FFFFFF',
+	secondaryContainer: '#FFDBCA',
+	onSecondaryContainer: '#2B160A',
+	tertiary: '#646032',
+	onTertiary: '#FFFFFF',
+	tertiaryContainer: '#1E1C00',
+	onTertiaryContainer: '#000000',
+	error: '#B3261E',
+	onError: '#FFFFFF',
+	errorContainer: '#F9DEDC',
+	onErrorContainer: '#410E0B',
+	outline: '#84736A',
+	background: '#FFFBFF',
+	onBackground: '#201A17',
+	surface: '#FFFBFF',
+	onSurface: '#201A17',
+	surfaceVariant: '#F4DED4',
+	onSurfaceVariant: '#52443D',
+	inverseSurface: '#362F2C',
+	inverseOnSurface: '#FBEEE9',
+	inversePrimary: '#FFB68F',
+	shadow: '#000000',
+	surfaceTint: '#000000',
+	outlineVariant: '#D7C2B9',
+	scrim: '#000000',
+}
+```
+</Tab>
+
+<Tab title="Dark Theme">
+```js
+colors.dark = {
+	// Same structure as light theme,
+	// but with colors optimized for dark mode
+	...
+}
+```
+</Tab>
+
+<Tab title="DayNight (Current)">
+```js
+colors.dayNight = {
+	// Automatically contains either light or dark colors
+	// based on the current system theme
+	...
+}
+```
+
+The `dayNight` object automatically reflects the current theme. You can also check the current theme:
+
+```js
+DynamicColor.colors(function(colors) {
+	if (colors.theme === 'light') {
+		// Light theme is active
+	} else {
+		// Dark theme is active
+	}
+});
+```
+</Tab>
+</Tabs>
+
+## Using Colors in CSS
+
+The plugin provides utilities to convert colors to CSS custom properties:
+
+```js
+DynamicColor.colors(function(colors) {
+	// Convert to CSS variables and inject into DOM
+	DynamicColor.colorsToDom(colors.dayNight);
+});
+```
+
+Then use them in your CSS:
+
+```css
+.myAppStyle {
+	color: var(--md-sys-color-primary);
+	background: var(--md-sys-color-surface);
+}
+```
+
+### Using Palette Colors
+
+```js
+DynamicColor.palette(function(colors) {
+	DynamicColor.paletteToDom(colors.palette);
+});
+```
+
+```css
+.myAppStyle {
+	color: var(--md-sys-color-primary);
+	background: var(--md-ref-palette-neutral-variant95);
+}
+```
+
+## Palette Structure
+
+The palette object provides tonal variations for each color family:
+
+```js
+colors.palette = {
+	// Primary colors (0-100)
+	primary0: '#000000',
+	primary10: '#331100',
+	primary20: '#532201',
+	primary30: '#703715',
+	primary40: '#8D4E2A',
+	primary50: '#A9653F',
+	primary60: '#C87F56',
+	primary70: '#E7996E',
+	primary80: '#FFB68F',
+	primary90: '#FFDBCA',
+	primary95: '#FFEDE6',
+	primary99: '#FFFBFF',
+	primary100: '#FFFFFF',
+	
+	// Secondary colors (0-100)
+	secondary0: '#000000',
+	secondary10: '#2B160A',
+	// ... through secondary100
+	
+	// Tertiary colors (0-100)
+	tertiary0: '#000000',
+	tertiary10: '#1E1C00',
+	// ... through tertiary100
+	
+	// Error colors (0-100)
+	error0: '#000000',
+	error10: '#410E0B',
+	// ... through error100
+	
+	// Neutral colors (0-100)
+	neutral0: '#000000',
+	neutral10: '#201A17',
+	// ... through neutral100
+	
+	// Neutral Variant colors (0-100)
+	neutralVariant0: '#000000',
+	neutralVariant10: '#241913',
+	// ... through neutralVariant100
+}
+```
+
+<Note>
+The numbers (0, 10, 20, etc.) represent the lightness of the color. Lower numbers are darker, higher numbers are lighter.
+</Note>
+
+## Complete Example
+
+```js
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+	DynamicColor.isDynamicColorAvailable(function(available) {
+		if (available) {
+			getDynamicColor();
+			document.addEventListener('dynamicColorChange', getDynamicColor);
+		}
+	});
+}
+
+function getDynamicColor() {
+	DynamicColor.colors(function(colors) {
+		// Apply surface tinting and inject into DOM
+		DynamicColor.colorsToDom(DynamicColor.tintSurfaceColors(colors.dayNight));
+	});
+	
+	// Optional: Get palette colors for more granular control
+	DynamicColor.palette(function(colors) {
+		DynamicColor.paletteToDom(colors.palette);
+	});
+}
+```
+
+## Learn More
+
+<Card title="Material Design 3 Color System" icon="palette" href="https://m3.material.io/styles/color/dynamic-color/overview">
+  Learn more about Material You's Dynamic Color system and color roles.
+</Card>
+
+<Card title="Color Utilities" icon="paintbrush" href="/guides/color-utilities">
+  Learn how to use color utilities like tinting and mixing.
+</Card>
+
+<Card title="Theme Detection" icon="moon" href="/guides/theme-detection">
+  Learn how to detect and respond to theme changes.
+</Card>

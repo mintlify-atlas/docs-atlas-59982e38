@@ -1,0 +1,69 @@
+---
+title: 'dynamicColorChange Event'
+description: 'Listen for changes in day/night mode or dynamic color palette'
+---
+
+## Overview
+
+The `dynamicColorChange` event fires when the plugin detects a change in either:
+- The day/night theme (light/dark mode)
+- The dynamic color palette
+- Both at the same time
+
+This event allows your app to respond immediately to system theme or color changes, ensuring your UI stays synchronized with the user's preferences.
+
+## Event Object
+
+The event object contains a `changed` property that indicates what triggered the event:
+
+<ParamField path="changed.dayNight" type="boolean">
+  `true` if the day/night theme has changed (dark mode turned on or off)
+</ParamField>
+
+<ParamField path="changed.dynamicColor" type="boolean">
+  `true` if the dynamic color palette has changed
+</ParamField>
+
+<Note>
+  Both properties can be `true` simultaneously if the system changes both the theme and colors at the same time.
+</Note>
+
+## Example
+
+Here's a complete example showing how to listen for and respond to dynamic color changes:
+
+```js
+document.addEventListener('dynamicColorChange', function(event) {
+
+	event.changed = {
+		dayNight: true, // true if the DayNight theme have changed (dark theme turned on or off)
+		dynamicColor: true, // true if the DynamiColor colors/palette have changed
+	}
+
+	if(event.changed.dayNight) {
+
+		DynamicColor.dayNight(function(theme) {
+
+			if(theme == 'light') {
+
+			} else { // theme == 'dark'
+
+			}
+
+		});
+
+	}
+
+	if(event.changed.dynamicColor) {
+		getDynamicColor();
+	}
+
+});
+```
+
+## Use Cases
+
+- **Refresh UI components** when the color palette changes
+- **Toggle dark/light mode styles** when the theme changes
+- **Update charts or visualizations** with new dynamic colors
+- **Reload content** that depends on the current theme

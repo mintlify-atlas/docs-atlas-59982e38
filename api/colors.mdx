@@ -1,0 +1,200 @@
+---
+title: colors
+description: Get the complete Dynamic Color palette with light, dark, and current theme colors
+---
+
+## Overview
+
+Returns the complete Dynamic Color system colors following Material Design 3 guidelines. Provides separate color sets for light and dark themes, plus the active theme colors.
+
+## Method Signature
+
+```javascript
+DynamicColor.colors(callback)
+```
+
+## Parameters
+
+<ParamField path="callback" type="function" required>
+  Callback function that receives the colors object
+  
+  **Callback Parameters:**
+  - `colors` (object): Complete color system with light, dark, dayNight, and theme properties
+</ParamField>
+
+## Returns
+
+<ResponseField name="colors" type="object">
+  Complete Dynamic Color system with the following structure:
+
+  <Expandable title="Color Object Structure">
+    <ResponseField name="theme" type="string">
+      Current active theme: `'light'` or `'dark'`
+    </ResponseField>
+
+    <ResponseField name="light" type="object">
+      Light theme colors (25 color tokens)
+      
+      <Expandable title="Light Theme Colors">
+        - `primary` - Primary brand color
+        - `onPrimary` - Text/icons on primary color
+        - `primaryContainer` - Container color for primary
+        - `onPrimaryContainer` - Text/icons on primary container
+        - `secondary` - Secondary brand color
+        - `onSecondary` - Text/icons on secondary color
+        - `secondaryContainer` - Container color for secondary
+        - `onSecondaryContainer` - Text/icons on secondary container
+        - `tertiary` - Tertiary accent color
+        - `onTertiary` - Text/icons on tertiary color
+        - `tertiaryContainer` - Container color for tertiary
+        - `onTertiaryContainer` - Text/icons on tertiary container
+        - `error` - Error color
+        - `onError` - Text/icons on error color
+        - `errorContainer` - Container color for errors
+        - `onErrorContainer` - Text/icons on error container
+        - `outline` - Border/outline color
+        - `background` - Background color
+        - `onBackground` - Text/icons on background
+        - `surface` - Surface color
+        - `onSurface` - Text/icons on surface
+        - `surfaceVariant` - Variant surface color
+        - `onSurfaceVariant` - Text/icons on surface variant
+        - `inverseSurface` - Inverse surface color
+        - `inverseOnSurface` - Text/icons on inverse surface
+        - `inversePrimary` - Inverse primary color
+        - `shadow` - Shadow color (always `#000000`)
+        - `surfaceTint` - Tint color for surfaces
+        - `outlineVariant` - Variant outline color
+        - `scrim` - Scrim overlay color
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="dark" type="object">
+      Dark theme colors (same 25 color tokens as light)
+    </ResponseField>
+
+    <ResponseField name="dayNight" type="object">
+      Currently active theme colors (references either `light` or `dark` based on current theme)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example
+
+```javascript
+DynamicColor.colors(function(colors) {
+
+	console.log('Current theme:', colors.theme); // 'light' or 'dark'
+
+	// Access light theme colors
+	console.log('Light Primary:', colors.light.primary);
+	
+	// Access dark theme colors
+	console.log('Dark Primary:', colors.dark.primary);
+	
+	// Access current theme colors
+	console.log('Active Primary:', colors.dayNight.primary);
+
+});
+```
+
+## Example Response
+
+```javascript
+{
+	theme: 'light',
+	light: {
+		primary: '#8D4E2A',
+		onPrimary: '#FFFFFF',
+		primaryContainer: '#331100',
+		onPrimaryContainer: '#000000',
+		secondary: '#765848',
+		onSecondary: '#FFFFFF',
+		secondaryContainer: '#FFDBCA',
+		onSecondaryContainer: '#2B160A',
+		tertiary: '#646032',
+		onTertiary: '#FFFFFF',
+		tertiaryContainer: '#1E1C00',
+		onTertiaryContainer: '#000000',
+		error: '#B3261E',
+		onError: '#FFFFFF',
+		errorContainer: '#F9DEDC',
+		onErrorContainer: '#410E0B',
+		outline: '#84736A',
+		background: '#FFFBFF',
+		onBackground: '#201A17',
+		surface: '#FFFBFF',
+		onSurface: '#201A17',
+		surfaceVariant: '#F4DED4',
+		onSurfaceVariant: '#52443D',
+		inverseSurface: '#362F2C',
+		inverseOnSurface: '#FBEEE9',
+		inversePrimary: '#FFB68F',
+		shadow: '#000000',
+		surfaceTint: '#000000',
+		outlineVariant: '#D7C2B9',
+		scrim: '#000000',
+	},
+	dark: {
+		// Same properties with dark theme values
+	},
+	dayNight: {
+		// References light or dark based on current theme
+	}
+}
+```
+
+## Common Usage Patterns
+
+### Apply Colors to DOM
+
+```javascript
+DynamicColor.colors(function(colors) {
+	// Apply current theme colors as CSS variables
+	DynamicColor.colorsToDom(colors.dayNight);
+});
+```
+
+### Apply with Surface Tinting
+
+```javascript
+DynamicColor.colors(function(colors) {
+	// Apply with Material Design elevation tints
+	var tintedColors = DynamicColor.tintSurfaceColors(colors.dayNight);
+	DynamicColor.colorsToDom(tintedColors);
+});
+```
+
+### Use in CSS
+
+After applying colors to DOM, use them in your styles:
+
+```css
+.my-button {
+	background-color: var(--md-sys-color-primary);
+	color: var(--md-sys-color-on-primary);
+}
+
+.my-surface {
+	background-color: var(--md-sys-color-surface);
+	color: var(--md-sys-color-on-surface);
+}
+```
+
+## Implementation Details
+
+- **Platform Support**: Android 12+ (API level 32)
+- **Color Format**: Hex color strings (e.g., `#8D4E2A`)
+- **Material Design**: Follows M3 color system specification
+- **Source Reference**: `plugin.js:209-210`, `DynamicColor.java:118-223`
+
+<Note>
+  Always check availability using [`isDynamicColorAvailable()`](/api/is-dynamic-color-available) before calling this method. On unsupported devices, the returned object will be empty.
+</Note>
+
+## Related Methods
+
+- [`tintColors()`](/utility/tint-colors) - Apply elevation tints to color sets
+- [`tintSurfaceColors()`](/utility/tint-surface-colors) - Apply tints to surface colors only
+- [`colorsToDom()`](/utility/colors-to-dom) - Apply colors as CSS variables
+- [`colorsToCssVars()`](/utility/colors-to-css-vars) - Convert colors to CSS variable string

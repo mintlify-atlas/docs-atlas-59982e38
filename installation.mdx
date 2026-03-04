@@ -1,0 +1,84 @@
+---
+title: Installation
+description: Install and configure the Cordova Plugin Dynamic Color in your project
+---
+
+<Steps>
+  <Step title="Install the Plugin">
+    Install the plugin using the Cordova CLI:
+
+    ```bash
+    cordova plugin add cordova-plugin-dynamic-color
+    ```
+
+    This will automatically:
+    - Add the plugin to your Cordova project
+    - Include the Google Material library dependency (com.google.android.material:material:1.9.0)
+    - Register the `DynamicColor` global object
+  </Step>
+
+  <Step title="Verify Platform Requirements">
+    Ensure your project targets Android 12 or higher.
+
+    <Warning>
+      Dynamic Color is only available on **Android 12+ (API level 31)**. The plugin will work on older Android versions, but dynamic color features will not be available.
+    </Warning>
+
+    Update your `config.xml` to target the appropriate Android version:
+
+    ```xml
+    <platform name="android">
+      <preference name="android-minSdkVersion" value="31" />
+      <preference name="android-targetSdkVersion" value="34" />
+    </platform>
+    ```
+
+    <Note>
+      If you need to support older Android versions, use the `isDynamicColorAvailable()` method to check for availability at runtime before using dynamic color features.
+    </Note>
+  </Step>
+
+  <Step title="Verify Installation">
+    After adding the plugin, verify it's properly installed by checking the `DynamicColor` object is available after the `deviceready` event:
+
+    ```javascript
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    function onDeviceReady() {
+      console.log(DynamicColor);
+      
+      // Check if dynamic color is available on this device
+      DynamicColor.isDynamicColorAvailable(function(available) {
+        if (available) {
+          console.log("Dynamic Color is available!");
+        } else {
+          console.log("Dynamic Color is not available on this device.");
+        }
+      });
+    }
+    ```
+
+    Build and run your app:
+
+    ```bash
+    cordova build android
+    cordova run android
+    ```
+  </Step>
+</Steps>
+
+## Dependencies
+
+The plugin automatically includes the following dependency:
+
+- **Google Material Library**: `com.google.android.material:material:1.9.0`
+
+No additional configuration is required.
+
+## Next Steps
+
+Now that the plugin is installed, proceed to the Quick Start guide to learn how to use it in your application.
+
+<Card title="Quick Start" icon="rocket" href="/quickstart">
+  Learn how to implement Dynamic Color in your app
+</Card>

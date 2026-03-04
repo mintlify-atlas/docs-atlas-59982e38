@@ -1,0 +1,106 @@
+---
+title: 'tintColors'
+description: 'Apply Material Design tint colors to create surface elevation variants'
+---
+
+## Overview
+
+Applies tint according to [Material Design Guidelines](https://m3.material.io/styles/color/the-color-system/color-roles#c0cdc1ba-7e67-4d6a-b294-218f659ff648) to generate surface elevation variants (surface1-surface5). This method creates tinted versions of colors by mixing them with the `surfaceTint` color at predefined elevation levels.
+
+<Note>
+You can also use CSS [`color-mix`](https://developer.chrome.com/blog/css-color-mix/) to mix surfaces with tint, but it's not widely [supported](https://caniuse.com/?search=color-mix) across browsers yet.
+</Note>
+
+## Signature
+
+```js
+DynamicColor.tintColors(colors, onlyKeys)
+```
+
+## Parameters
+
+<ParamField path="colors" type="object" required>
+  The colors object containing Material Design color tokens. Must include a `surfaceTint` property.
+</ParamField>
+
+<ParamField path="onlyKeys" type="array" default="false">
+  Optional array of color keys to generate tint versions for. If not provided or `false`, tint variants will be generated for all keys except `surfaceTint`.
+  
+  Example: `['surface', 'background']`
+</ParamField>
+
+## Returns
+
+<ResponseField name="colors" type="object">
+  The input colors object with added elevation variants (1-5) for each tinted color.
+  
+  For each color key, five new properties are added:
+  - `{key}1` - Elevation level 1 (5% tint)
+  - `{key}2` - Elevation level 2 (8% tint)
+  - `{key}3` - Elevation level 3 (11% tint)
+  - `{key}4` - Elevation level 4 (12% tint)
+  - `{key}5` - Elevation level 5 (14% tint)
+</ResponseField>
+
+## Example
+
+```js
+DynamicColor.colors(function(colors) {
+  var tintedColors = DynamicColor.tintColors(colors.light);
+  
+  console.log(tintedColors);
+  // {
+  //   surface: '#FFFBFF',
+  //   surface1: '#f9f2f4',
+  //   surface2: '#f6edee',
+  //   surface3: '#f2e8e8',
+  //   surface4: '#f1e6e5',
+  //   surface5: '#efe3e1',
+  //   ...
+  // }
+});
+```
+
+### CSS Variables Output
+
+```css
+--md-sys-color-surface: #FFFBFF;
+--md-sys-color-surface1: #f9f2f4;
+--md-sys-color-surface2: #f6edee;
+--md-sys-color-surface3: #f2e8e8;
+--md-sys-color-surface4: #f1e6e5;
+--md-sys-color-surface5: #efe3e1;
+```
+
+## Selective Tinting
+
+You can tint only specific colors by providing the `onlyKeys` parameter:
+
+```js
+var tintedColors = DynamicColor.tintColors(colors.light, ['surface', 'background']);
+// Only generates surface1-surface5 and background1-background5
+```
+
+<Tip>
+For tinting only surface-related colors, use [`tintSurfaceColors`](/api/tint-surface-colors) as a convenient wrapper.
+</Tip>
+
+## Implementation Details
+
+The method uses the following elevation-to-tint mapping from Material Design:
+
+| Elevation | Tint Amount |
+|-----------|-------------|
+| 1         | 5%          |
+| 2         | 8%          |
+| 3         | 11%         |
+| 4         | 12%         |
+| 5         | 14%         |
+
+Implementation location: `www/plugin.js:69-89`
+
+## Related Methods
+
+- [`tintSurfaceColors`](/api/tint-surface-colors) - Convenience wrapper for surface colors only
+- [`mixColorElevation`](/api/mix-color-elevation) - Mix two colors using elevation levels
+- [`colorsToDom`](/api/colors-to-dom) - Apply tinted colors to the DOM

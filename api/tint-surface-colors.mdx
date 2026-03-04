@@ -1,0 +1,122 @@
+---
+title: 'tintSurfaceColors'
+description: 'Apply Material Design tint to surface and background colors only'
+---
+
+## Overview
+
+`tintSurfaceColors` is a convenience wrapper around [`tintColors`](/api/tint-colors) that applies Material Design tinting specifically to surface and background-related colors. This method is ideal when you only need elevation variants for surfaces without generating variants for all color tokens.
+
+## Signature
+
+```js
+DynamicColor.tintSurfaceColors(colors)
+```
+
+## Parameters
+
+<ParamField path="colors" type="object" required>
+  The colors object containing Material Design color tokens. Must include a `surfaceTint` property.
+</ParamField>
+
+## Returns
+
+<ResponseField name="colors" type="object">
+  The input colors object with added elevation variants (1-5) for the following surface-related color keys:
+  
+  - `background`
+  - `onBackground`
+  - `surface`
+  - `onSurface`
+  - `surfaceVariant`
+  - `onSurfaceVariant`
+  - `inverseSurface`
+  - `inverseOnSurface`
+  
+  Each key will have five new properties: `{key}1`, `{key}2`, `{key}3`, `{key}4`, `{key}5`
+</ResponseField>
+
+## Example
+
+```js
+DynamicColor.colors(function(colors) {
+  var surfaceColors = DynamicColor.tintSurfaceColors(colors.light);
+  
+  console.log(surfaceColors);
+  // {
+  //   surface: '#FFFBFF',
+  //   surface1: '#f9f2f4',
+  //   surface2: '#f6edee',
+  //   surface3: '#f2e8e8',
+  //   surface4: '#f1e6e5',
+  //   surface5: '#efe3e1',
+  //   background: '#FFFBFF',
+  //   background1: '#f9f2f4',
+  //   ...
+  // }
+});
+```
+
+### CSS Variables Output
+
+```css
+--md-sys-color-surface: #FFFBFF;
+--md-sys-color-surface1: #f9f2f4;
+--md-sys-color-surface2: #f6edee;
+--md-sys-color-surface3: #f2e8e8;
+--md-sys-color-surface4: #f1e6e5;
+--md-sys-color-surface5: #efe3e1;
+```
+
+## Common Use Case
+
+This method is commonly used in the plugin workflow to apply surface tinting before injecting colors into the DOM:
+
+```js
+DynamicColor.colors(function(colors) {
+  DynamicColor.colorsToDom(DynamicColor.tintSurfaceColors(colors.dayNight));
+});
+```
+
+<Tip>
+Use `tintSurfaceColors` when you only need surface elevation variants. For more control over which colors to tint, use [`tintColors`](/api/tint-colors) with the `onlyKeys` parameter.
+</Tip>
+
+## Surface Colors Tinted
+
+The following color tokens receive elevation variants:
+
+| Color Token | Description |
+|-------------|-------------|
+| `background` | Main background color |
+| `onBackground` | Text/content color on background |
+| `surface` | Surface color for components |
+| `onSurface` | Text/content color on surface |
+| `surfaceVariant` | Variant surface color |
+| `onSurfaceVariant` | Text/content color on surface variant |
+| `inverseSurface` | Inverse surface color |
+| `inverseOnSurface` | Text/content color on inverse surface |
+
+## Implementation Details
+
+Implementation location: `www/plugin.js:91-104`
+
+The method internally calls:
+```js
+tintColors(colors, [
+  'background',
+  'onBackground',
+  'surface',
+  'onSurface',
+  'surfaceVariant',
+  'onSurfaceVariant',
+  'inverseSurface',
+  'inverseOnSurface',
+])
+```
+
+## Related Methods
+
+- [`tintColors`](/api/tint-colors) - Tint any color keys with custom selection
+- [`mixColorElevation`](/api/mix-color-elevation) - Mix colors using elevation levels
+- [`colorsToDom`](/api/colors-to-dom) - Apply colors to the DOM as CSS variables

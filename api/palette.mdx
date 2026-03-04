@@ -1,0 +1,242 @@
+---
+title: palette
+description: Get the extended Material Design 3 tonal palette with all tonal values
+---
+
+## Overview
+
+Returns the complete Material Design 3 tonal palette with all tonal values (0-100) for neutral, primary, secondary, tertiary, and error colors. This provides the full spectrum of color variations used in Material Design 3.
+
+## Method Signature
+
+```javascript
+DynamicColor.palette(callback)
+```
+
+## Parameters
+
+<ParamField path="callback" type="function" required>
+  Callback function that receives the palette object
+  
+  **Callback Parameters:**
+  - `colors` (object): Complete tonal palette with theme property
+</ParamField>
+
+## Returns
+
+<ResponseField name="colors" type="object">
+  Complete tonal palette with the following structure:
+
+  <Expandable title="Palette Object Structure">
+    <ResponseField name="theme" type="string">
+      Current active theme: `'light'` or `'dark'`
+    </ResponseField>
+
+    <ResponseField name="palette" type="object">
+      Tonal palette with all color variations
+      
+      <Expandable title="Palette Colors (65 tokens)">
+        **Error Colors** (13 tones)
+        - `error0` through `error100` - Error color tonal values
+        - Available tones: 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100
+
+        **Neutral Colors** (13 tones)
+        - `neutral0` through `neutral100` - Neutral color tonal values
+        - Available tones: 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100
+
+        **Neutral Variant Colors** (13 tones)
+        - `neutralVariant0` through `neutralVariant100` - Neutral variant tonal values
+        - Available tones: 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100
+
+        **Primary Colors** (13 tones)
+        - `primary0` through `primary100` - Primary color tonal values
+        - Available tones: 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100
+
+        **Secondary Colors** (13 tones)
+        - `secondary0` through `secondary100` - Secondary color tonal values
+        - Available tones: 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100
+
+        **Tertiary Colors** (13 tones)
+        - `tertiary0` through `tertiary100` - Tertiary color tonal values
+        - Available tones: 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example
+
+```javascript
+DynamicColor.palette(function(colors) {
+
+	console.log('Current theme:', colors.theme);
+	
+	// Access specific tonal values
+	console.log('Primary 40:', colors.palette.primary40);
+	console.log('Neutral 95:', colors.palette.neutral95);
+
+});
+```
+
+## Example Response
+
+```javascript
+{
+	theme: 'light',
+	palette: {
+		error0: '#000000',
+		error10: '#410E0B',
+		error20: '#601410',
+		error30: '#8C1D18',
+		error40: '#B3261E',
+		error50: '#DC362E',
+		error60: '#E46962',
+		error70: '#EC928E',
+		error80: '#F2B8B5',
+		error90: '#F9DEDC',
+		error95: '#FCEEEE',
+		error99: '#FFFBF9',
+		error100: '#FFFFFF',
+		neutral0: '#000000',
+		neutral10: '#201A17',
+		neutral20: '#362F2C',
+		neutral30: '#4D4542',
+		neutral40: '#655D59',
+		neutral50: '#7D7470',
+		neutral60: '#998F8A',
+		neutral70: '#B4A9A4',
+		neutral80: '#D0C4BF',
+		neutral90: '#ECE0DB',
+		neutral95: '#FBEEE9',
+		neutral99: '#FFFBFF',
+		neutral100: '#FFFFFF',
+		neutralVariant0: '#000000',
+		neutralVariant10: '#241913',
+		neutralVariant20: '#3B2E27',
+		neutralVariant30: '#52443D',
+		neutralVariant40: '#6B5B53',
+		neutralVariant50: '#84736A',
+		neutralVariant60: '#9F8D84',
+		neutralVariant70: '#BBA79E',
+		neutralVariant80: '#D7C2B9',
+		neutralVariant90: '#F4DED4',
+		neutralVariant95: '#FFEDE6',
+		neutralVariant99: '#FFFBFF',
+		neutralVariant100: '#FFFFFF',
+		primary0: '#000000',
+		primary10: '#331100',
+		primary20: '#532201',
+		primary30: '#703715',
+		primary40: '#8D4E2A',
+		primary50: '#A9653F',
+		primary60: '#C87F56',
+		primary70: '#E7996E',
+		primary80: '#FFB68F',
+		primary90: '#FFDBCA',
+		primary95: '#FFEDE6',
+		primary99: '#FFFBFF',
+		primary100: '#FFFFFF',
+		secondary0: '#000000',
+		secondary10: '#2B160A',
+		secondary20: '#432B1D',
+		secondary30: '#5C4132',
+		secondary40: '#765848',
+		secondary50: '#906F5E',
+		secondary60: '#AC8978',
+		secondary70: '#C9A391',
+		secondary80: '#E6BEAB',
+		secondary90: '#FFDBCA',
+		secondary95: '#FFEDE6',
+		secondary99: '#FFFBFF',
+		secondary100: '#FFFFFF',
+		tertiary0: '#000000',
+		tertiary10: '#1E1C00',
+		tertiary20: '#343108',
+		tertiary30: '#4B481D',
+		tertiary40: '#646032',
+		tertiary50: '#7C7847',
+		tertiary60: '#97925F',
+		tertiary70: '#B2AD78',
+		tertiary80: '#CEC891',
+		tertiary90: '#EBE4AA',
+		tertiary95: '#F9F3B8',
+		tertiary99: '#FFFBFF',
+		tertiary100: '#FFFFFF'
+	}
+}
+```
+
+## Common Usage Patterns
+
+### Apply Palette to DOM
+
+```javascript
+DynamicColor.palette(function(colors) {
+	// Apply palette colors as CSS variables
+	DynamicColor.paletteToDom(colors.palette);
+});
+```
+
+### Use Specific Tonal Values
+
+```javascript
+DynamicColor.palette(function(colors) {
+	// Use specific tones for custom UI elements
+	var customBackground = colors.palette.neutralVariant95;
+	var customBorder = colors.palette.neutralVariant60;
+	
+	document.querySelector('.custom-card').style.backgroundColor = customBackground;
+	document.querySelector('.custom-card').style.borderColor = customBorder;
+});
+```
+
+### Use in CSS
+
+After applying palette to DOM:
+
+```css
+.custom-surface {
+	background: var(--md-ref-palette-neutral-variant95);
+	color: var(--md-ref-palette-neutral10);
+	border: 1px solid var(--md-ref-palette-neutral-variant80);
+}
+
+.accent-element {
+	background: var(--md-ref-palette-primary80);
+	color: var(--md-ref-palette-primary20);
+}
+```
+
+## Tonal Value Guide
+
+- **0** - Black (`#000000`)
+- **10-90** - Progressive lightening from dark to light
+- **95** - Very light, near white
+- **99** - Almost white
+- **100** - White (`#FFFFFF`)
+
+In light themes, lower tonal values (10-40) are typically used for text and prominent elements, while higher values (80-99) are used for backgrounds.
+
+In dark themes, the usage is inverted: higher tonal values for text and lower values for backgrounds.
+
+## Implementation Details
+
+- **Platform Support**: Android 12+ (API level 32)
+- **Color Format**: Hex color strings (e.g., `#8D4E2A`)
+- **Total Colors**: 65 tonal palette values
+- **Material Design**: Follows M3 tonal palette specification
+- **Source Reference**: `plugin.js:212-213`, `DynamicColor.java:225-336`
+
+<Note>
+  The palette provides reference colors for advanced customization. For standard UI elements, use the [`colors()`](/api/colors) method which provides semantic color tokens.
+</Note>
+
+<Note>
+  Always check availability using [`isDynamicColorAvailable()`](/api/is-dynamic-color-available) before calling this method. On unsupported devices, the palette object will be empty.
+</Note>
+
+## Related Methods
+
+- [`colors()`](/api/colors) - Get semantic color system (recommended for most use cases)
+- [`paletteToDom()`](/utility/palette-to-dom) - Apply palette as CSS variables
+- [`paletteToCssVars()`](/utility/palette-to-css-vars) - Convert palette to CSS variable string

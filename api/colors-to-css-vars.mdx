@@ -1,0 +1,119 @@
+---
+title: 'colorsToCssVars'
+description: 'Convert colors object to CSS custom properties string'
+---
+
+## Overview
+
+Converts a colors object to a CSS custom properties (CSS variables) string. This method transforms camelCase color keys into kebab-case CSS variable names with a configurable prefix.
+
+## Signature
+
+```javascript
+DynamicColor.colorsToCssVars(colors, prefix)
+```
+
+## Parameters
+
+<ParamField path="colors" type="Object" required>
+  The colors object containing color key-value pairs. Typically from `DynamicColor.colors()` response (e.g., `colors.light`, `colors.dark`, or `colors.dayNight`).
+  
+  ```javascript
+  {
+    primary: '#8D4E2A',
+    onPrimary: '#FFFFFF',
+    primaryContainer: '#331100',
+    // ... more colors
+  }
+  ```
+</ParamField>
+
+<ParamField path="prefix" type="String" default="--md-sys-color">
+  The prefix to use for CSS variable names. The method will append a hyphen and the kebab-cased color key name.
+</ParamField>
+
+## Returns
+
+<ResponseField name="cssVars" type="String">
+  A string containing CSS custom property declarations, one per line, formatted as `prefix-key-name: value;\n`
+  
+  CamelCase keys are automatically converted to kebab-case (e.g., `onPrimary` becomes `on-primary`).
+</ResponseField>
+
+## Example
+
+```javascript
+DynamicColor.colors(function(colors) {
+  var cssVars = DynamicColor.colorsToCssVars(colors.light);
+  
+  console.log(cssVars);
+  /*
+  --md-sys-color-primary: #8D4E2A;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #331100;
+  --md-sys-color-on-primary-container: #000000;
+  --md-sys-color-secondary: #765848;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #FFDBCA;
+  --md-sys-color-on-secondary-container: #2B160A;
+  --md-sys-color-tertiary: #646032;
+  --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-error: #B3261E;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-background: #FFFBFF;
+  --md-sys-color-on-background: #201A17;
+  --md-sys-color-surface: #FFFBFF;
+  --md-sys-color-on-surface: #201A17;
+  ... and more
+  */
+});
+```
+
+### With Custom Prefix
+
+```javascript
+DynamicColor.colors(function(colors) {
+  var cssVars = DynamicColor.colorsToCssVars(colors.dark, '--my-theme');
+  
+  /*
+  --my-theme-primary: #FFB68F;
+  --my-theme-on-primary: #532201;
+  --my-theme-background: #201A17;
+  ... and more
+  */
+});
+```
+
+## Implementation
+
+The method iterates through all keys in the colors object and formats them as CSS variables:
+
+```javascript
+// From plugin.js:106-116
+function colorsToCssVars(colors, prefix = '--md-sys-color') {
+  var cssVars = '';
+  
+  for(var key in colors) {
+    cssVars += prefix+'-'+key.replace(/([A-Z])/g, '-$1').toLowerCase()+': '+colors[key]+';\n';
+  }
+  
+  return cssVars;
+}
+```
+
+<Note>
+  This method only generates the CSS string. To apply these variables to the DOM, use [`colorsToDom()`](/api/colors-to-dom) instead.
+</Note>
+
+## Use Cases
+
+- Generate CSS variables for manual insertion into stylesheets
+- Preview CSS variable output before applying to DOM
+- Export CSS variables to files or external style management systems
+- Custom CSS variable integration workflows
+
+## See Also
+
+- [`colorsToDom()`](/api/colors-to-dom) - Apply colors as CSS variables directly to the DOM
+- [`paletteToCssVars()`](/api/palette-to-css-vars) - Convert palette object to CSS variables
+- [`DynamicColor.colors()`](/api/colors) - Get the colors object

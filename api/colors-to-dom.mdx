@@ -1,0 +1,183 @@
+---
+title: 'colorsToDom'
+description: 'Apply colors as CSS custom properties directly to the DOM'
+---
+
+## Overview
+
+Converts a colors object to CSS custom properties and injects them into the document by creating or updating a `<style>` tag. This is the recommended method for applying dynamic colors to your application's UI.
+
+## Signature
+
+```javascript
+DynamicColor.colorsToDom(colors, prefix)
+```
+
+## Parameters
+
+<ParamField path="colors" type="Object" required>
+  The colors object containing color key-value pairs. Typically from `DynamicColor.colors()` response (e.g., `colors.light`, `colors.dark`, or `colors.dayNight`).
+  
+  ```javascript
+  {
+    primary: '#8D4E2A',
+    onPrimary: '#FFFFFF',
+    primaryContainer: '#331100',
+    surface: '#FFFBFF',
+    onSurface: '#201A17',
+    // ... more colors
+  }
+  ```
+</ParamField>
+
+<ParamField path="prefix" type="String" default="--md-sys-color">
+  The prefix to use for CSS variable names. The method will append a hyphen and the kebab-cased color key name.
+</ParamField>
+
+## Returns
+
+<ResponseField name="success" type="Boolean">
+  Returns `true` after successfully inserting or updating the style tag in the DOM.
+</ResponseField>
+
+## Behavior
+
+- **First call**: Creates a new `<style>` element with class `dynamicColorCssVarsColors` and appends it to `<head>`
+- **Subsequent calls**: Updates the existing style element's content with new CSS variables
+- CSS variables are wrapped in `:root { ... }` selector for global availability
+
+## Example
+
+```javascript
+DynamicColor.colors(function(colors) {
+  // Apply dark theme colors to the DOM
+  DynamicColor.colorsToDom(colors.dark);
+  
+  // Colors are now available as CSS variables throughout your app
+});
+```
+
+```css
+/* Use the injected CSS variables in your styles */
+.my-button {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.my-card {
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+```
+
+### With Tinted Surface Colors
+
+```javascript
+DynamicColor.colors(function(colors) {
+  // Apply tinted surface colors for Material Design 3 elevation
+  var tintedColors = DynamicColor.tintSurfaceColors(colors.dayNight);
+  DynamicColor.colorsToDom(tintedColors);
+});
+```
+
+```css
+/* Use elevation surfaces with tint */
+.elevation-1 {
+  background-color: var(--md-sys-color-surface1);
+}
+
+.elevation-2 {
+  background-color: var(--md-sys-color-surface2);
+}
+```
+
+### With Custom Prefix
+
+```javascript
+DynamicColor.colors(function(colors) {
+  DynamicColor.colorsToDom(colors.light, '--my-theme');
+});
+```
+
+```css
+.custom-element {
+  color: var(--my-theme-primary);
+  background: var(--my-theme-surface);
+}
+```
+
+## Implementation
+
+The method creates a `:root` CSS rule with all color variables:
+
+```javascript
+// From plugin.js:145-150
+function colorsToDom(colors, prefix = '--md-sys-color') {
+  _colorsToDom(colors, prefix, 'dynamicColorCssVarsColors');
+  return true;
+}
+
+// Helper function from plugin.js:124-143
+function _colorsToDom(colors, prefix, className) {
+  var cssVars = colorsToCssVars(colors, prefix);
+  cssVars = ':root {\n'+cssVars+'}';
+  
+  var element = document.querySelector('.'+className);
+  
+  if(element) {
+    element.innerHTML = cssVars;
+  } else {
+    var head = document.head || document.getElementsByTagName('head')[0],
+        style = document.createElement('style');
+    style.className = className;
+    style.type = 'text/css';
+    style.appendChild(document.createTextNode(cssVars));
+    head.appendChild(style);
+  }
+  
+  return true;
+}
+```
+
+## Complete Usage Pattern
+
+```javascript
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+  DynamicColor.isDynamicColorAvailable(function(available) {
+    if(available) {
+      updateDynamicColors();
+      
+      // Update colors when theme changes
+      document.addEventListener('dynamicColorChange', updateDynamicColors);
+    }
+  });
+}
+
+function updateDynamicColors() {
+  DynamicColor.colors(function(colors) {
+    // Apply tinted colors that match current theme (light/dark)
+    var tintedColors = DynamicColor.tintSurfaceColors(colors.dayNight);
+    DynamicColor.colorsToDom(tintedColors);
+  });
+}
+```
+
+<Note>
+  The style tag uses class `dynamicColorCssVarsColors` for tracking. If you need to apply both colors and palette, use this method alongside [`paletteToDom()`](/api/palette-to-dom) - they use different class names and won't conflict.
+</Note>
+
+## Use Cases
+
+- Apply Material Design 3 dynamic colors to your entire app
+- Update theme colors when user switches between light/dark mode
+- Respond to system wallpaper color changes on Android 12+
+- Create adaptive UI that follows platform design guidelines
+
+## See Also
+
+- [`colorsToCssVars()`](/api/colors-to-css-vars) - Generate CSS string without applying to DOM
+- [`paletteToDom()`](/api/palette-to-dom) - Apply palette colors to DOM
+- [`DynamicColor.tintSurfaceColors()`](/api/tint-surface-colors) - Add elevation tints to surface colors
+- [`DynamicColor.colors()`](/api/colors) - Get the colors object
