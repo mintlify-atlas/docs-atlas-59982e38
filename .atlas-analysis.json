@@ -1,0 +1,96 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "Cordova Plugin Dynamic Color",
+  "projectDescription": "A Cordova plugin to access Android 12+ Dynamic Color palettes and Material You theming",
+  "theme": "palm",
+  "primaryColor": "#848c8e",
+  "lightColor": "#11161e",
+  "darkColor": "#cfd0d2",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/dynamic-colors",
+              "guides/theme-detection",
+              "guides/color-utilities"
+            ]
+          },
+          {
+            "group": "Events",
+            "pages": [
+              "events/dynamic-color-change"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Core Methods",
+            "pages": [
+              "api/is-dynamic-color-available",
+              "api/day-night",
+              "api/colors",
+              "api/palette"
+            ]
+          },
+          {
+            "group": "Color Utilities",
+            "pages": [
+              "api/tint-colors",
+              "api/tint-surface-colors",
+              "api/mix-color",
+              "api/mix-color-elevation"
+            ]
+          },
+          {
+            "group": "DOM Helpers",
+            "pages": [
+              "api/colors-to-css-vars",
+              "api/palette-to-css-vars",
+              "api/colors-to-dom",
+              "api/palette-to-dom"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Access Android 12+ Dynamic Color palettes",
+    "Detect light/dark theme changes",
+    "Material Design 3 color system support",
+    "CSS custom properties generation",
+    "Surface tinting utilities",
+    "Color mixing functions",
+    "Real-time theme change detection"
+  ],
+  "publicApiSurface": [
+    "DynamicColor.isDynamicColorAvailable()",
+    "DynamicColor.dayNight()",
+    "DynamicColor.colors()",
+    "DynamicColor.palette()",
+    "DynamicColor.tintColors()",
+    "DynamicColor.tintSurfaceColors()",
+    "DynamicColor.mixColor()",
+    "DynamicColor.mixColorElevation()",
+    "DynamicColor.colorsToCssVars()",
+    "DynamicColor.paletteToCssVars()",
+    "DynamicColor.colorsToDom()",
+    "DynamicColor.paletteToDom()",
+    "dynamicColorChange event"
+  ]
+}
